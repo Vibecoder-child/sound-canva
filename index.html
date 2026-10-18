@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sound Canvas</title>
+  <meta name="description" content="Rain, fireplace, cafe chatter and lofi music with animated pixel-art scenes. Pick a sound and let it play while you work, study or sleep.">
+  <meta name="theme-color" content="#0D1124">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Sound Canvas">
+  <meta property="og:description" content="Rain, fireplace, cafe chatter and lofi music with animated pixel-art scenes.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect width='16' height='16' fill='%230D1124'/%3E%3Cpath fill='%23FFC86B' d='M3 7h2v3H3zM6 4h2v8H6zM9 2h2v11H9zM12 6h2v5h-2z'/%3E%3C/svg%3E">
+
+  <!-- 글꼴: 본문 Pretendard, 픽셀 글꼴 Galmuri (인터넷이 없으면 시스템 글꼴로 대체됩니다) -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="is-booting">
+  <!--
+    화면 문구는 js/script.js의 I18N(영어·한국어)에서 채웁니다.
+    data-i18n="키"      → 글자 내용
+    data-i18n-aria="키" → 화면 낭독기용 이름(aria-label)
+    여기 적힌 영어는 스크립트가 돌기 전 기본값입니다.
+  -->
+
+  <!-- 픽셀 아이콘 모음 (한 번 정의하고 <use>로 재사용) -->
+  <svg class="sprite" width="0" height="0" aria-hidden="true" focusable="false">
+    <symbol id="i-gear" viewBox="0 0 16 16"><path d="M6 0h4v1h-4zM2 1h2v1h-2zM6 1h4v1h-4zM12 1h2v1h-2zM2 2h12v1h-12zM3 3h10v1h-10zM2 4h4v1h-4zM10 4h4v1h-4zM2 5h3v1h-3zM11 5h3v1h-3zM0 6h4v1h-4zM12 6h4v1h-4zM0 7h4v1h-4zM12 7h4v1h-4zM0 8h4v1h-4zM12 8h4v1h-4zM0 9h4v1h-4zM12 9h4v1h-4zM2 10h3v1h-3zM11 10h3v1h-3zM2 11h4v1h-4zM10 11h4v1h-4zM3 12h10v1h-10zM2 13h12v1h-12zM2 14h2v1h-2zM6 14h4v1h-4zM12 14h2v1h-2zM6 15h4v1h-4z"/></symbol>
+    <symbol id="i-close" viewBox="0 0 12 12"><path d="M0 0h2v1h-2zM10 0h2v1h-2zM0 1h3v1h-3zM9 1h3v1h-3zM1 2h3v1h-3zM8 2h3v1h-3zM2 3h3v1h-3zM7 3h3v1h-3zM3 4h6v1h-6zM4 5h4v1h-4zM4 6h4v1h-4zM3 7h6v1h-6zM2 8h3v1h-3zM7 8h3v1h-3zM1 9h3v1h-3zM8 9h3v1h-3zM0 10h3v1h-3zM9 10h3v1h-3zM0 11h2v1h-2zM10 11h2v1h-2z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 12 12"><path d="M0 0h2v1h-2zM0 1h4v1h-4zM0 2h6v1h-6zM0 3h8v1h-8zM0 4h10v1h-10zM0 5h12v1h-12zM0 6h12v1h-12zM0 7h10v1h-10zM0 8h8v1h-8zM0 9h6v1h-6zM0 10h4v1h-4zM0 11h2v1h-2z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 12 12"><path d="M0 0h4v12h-4zM8 0h4v12h-4z"/></symbol>
+    <symbol id="i-mute" viewBox="0 0 16 11"><path d="M6 0h2v1h-2zM5 1h3v1h-3zM4 2h4v1h-4zM0 3h8v1h-8zM10 3h1v1h-1zM14 3h1v1h-1zM0 4h8v1h-8zM11 4h1v1h-1zM13 4h1v1h-1zM0 5h8v1h-8zM12 5h1v1h-1zM0 6h8v1h-8zM11 6h1v1h-1zM13 6h1v1h-1zM0 7h8v1h-8zM10 7h1v1h-1zM14 7h1v1h-1zM4 8h4v1h-4zM5 9h3v1h-3zM6 10h2v1h-2z"/></symbol>
+    <symbol id="i-unmute" viewBox="0 0 16 11"><path d="M6 0h2v1h-2zM5 1h3v1h-3zM12 1h1v1h-1zM4 2h4v1h-4zM10 2h1v1h-1zM13 2h1v1h-1zM0 3h8v1h-8zM11 3h1v1h-1zM14 3h1v1h-1zM0 4h8v1h-8zM11 4h1v1h-1zM14 4h1v1h-1zM0 5h8v1h-8zM11 5h1v1h-1zM14 5h1v1h-1zM0 6h8v1h-8zM11 6h1v1h-1zM14 6h1v1h-1zM0 7h8v1h-8zM11 7h1v1h-1zM14 7h1v1h-1zM4 8h4v1h-4zM10 8h1v1h-1zM13 8h1v1h-1zM5 9h3v1h-3zM12 9h1v1h-1zM6 10h2v1h-2z"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 12 12"><path d="M4 0h2v1h-2zM2 1h3v1h-3zM1 2h3v1h-3zM1 3h3v1h-3zM0 4h4v1h-4zM0 5h4v1h-4zM0 6h4v1h-4zM0 7h5v1h-5zM1 8h5v1h-5zM1 9h10v1h-10zM2 10h8v1h-8zM4 11h4v1h-4z"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 8 5"><path d="M0 0h2v1h-2zM6 0h2v1h-2zM0 1h3v1h-3zM5 1h3v1h-3zM1 2h6v1h-6zM2 3h4v1h-4zM3 4h2v1h-2z"/></symbol>
+  </svg>
+
+  <!-- 배경 장면: 새 레이어가 이전 배경 위에 쌓이며 0.8초 동안 교차 페이드 -->
+  <div class="scene" id="scene" aria-hidden="true"></div>
+  <div class="scene-shade" aria-hidden="true"></div>
+
+  <!-- 우측 상단: 디지털 시계 + 음소거 · 슬립 타이머 표시 (오른쪽부터 차례로 놓임) -->
+  <header class="hud">
+    <time class="clock" id="clock"></time>
+    <button class="hud-badge" id="muteBadge" type="button" data-i18n-aria="unmute" aria-label="Unmute" hidden>
+      <svg class="icon" width="16" height="11" aria-hidden="true"><use href="#i-mute"></use></svg>
+      <span data-i18n="mutedBadge">Muted</span>
+    </button>
+    <button class="hud-badge" id="timerBadge" type="button" hidden>
+      <svg class="icon" width="12" height="12" aria-hidden="true"><use href="#i-moon"></use></svg>
+      <span id="timerBadgeText"></span>
+    </button>
+  </header>
+
+  <!-- 단축키를 눌렀을 때 화면 가운데에 잠깐 뜨는 표시 -->
+  <div class="osd" id="osd" aria-hidden="true">
+    <svg class="osd__icon" viewBox="0 0 16 16"><use id="osdUse" href="#i-play"></use></svg>
+  </div>
+
+  <!-- 하단 가운데: 지금 재생 중 + 도크 -->
+  <main class="stage">
+    <h1 class="visually-hidden" data-i18n="siteTitle">Sound Canvas</h1>
+    <p class="now-playing" id="nowPlaying">
+      <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="now-playing__text" id="nowPlayingText"></span>
+    </p>
+    <nav class="dock" data-i18n-aria="dockLabel" aria-label="Choose a sound">
+      <div class="dock__bg" aria-hidden="true"></div>
+      <div class="dock__items" id="dock"></div>
+    </nav>
+  </main>
+
+  <!-- 우측 하단: 설정 열기 -->
+  <button class="gear" id="gearButton" type="button" aria-label="Open settings" aria-controls="drawer" aria-expanded="false">
+    <svg class="icon" width="24" height="24" aria-hidden="true"><use href="#i-gear"></use></svg>
+  </button>
+
+  <!-- 히든 설정 서랍 -->
+  <aside class="drawer" id="drawer" aria-labelledby="drawerTitle" aria-hidden="true" inert>
+    <div class="drawer__bg" aria-hidden="true"></div>
+    <div class="drawer__body">
+      <div class="drawer__head">
+        <h2 class="drawer__title" id="drawerTitle" data-i18n="settings">Settings</h2>
+        <button class="icon-button" id="drawerClose" type="button" data-i18n-aria="closeSettings" aria-label="Close settings">
+          <svg class="icon" width="12" height="12" aria-hidden="true"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+
+      <!-- 지금 고른 소리: 볼륨 · 트랙 -->
+      <section class="drawer__section" data-i18n-aria="nowSection" aria-label="Current sound">
+        <p class="empty" id="drawerEmpty" data-i18n="emptyState">Pick a sound from the dock to set its volume and track here.</p>
+        <div class="controls" id="drawerControls" hidden>
+          <div class="now-card">
+            <span class="now-card__icon" id="nowIcon" aria-hidden="true"></span>
+            <div class="now-card__text">
+              <strong class="now-card__name" id="nowName"></strong>
+              <span class="now-card__track" id="nowTrack"></span>
+            </div>
+            <span class="chip" id="nowStatus"></span>
+          </div>
+
+          <div class="field">
+            <div class="field__head">
+              <label for="volumeRange" data-i18n="volume">Volume</label>
+              <output id="volumeValue" for="volumeRange">70%</output>
+            </div>
+            <input class="range" id="volumeRange" type="range" min="0" max="100" step="1" value="70">
+            <p class="field__note" id="volumeNote" data-i18n="volumeNote" hidden>This browser doesn't allow volume changes on this device. Use your device's volume buttons.</p>
+          </div>
+
+          <div class="field">
+            <div class="field__head"><label for="trackSelect" data-i18n="track">Track</label></div>
+            <div class="select">
+              <select id="trackSelect"></select>
+              <svg class="icon select__chevron" width="8" height="5" aria-hidden="true"><use href="#i-chevron"></use></svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 슬립 타이머 -->
+      <section class="drawer__section" aria-labelledby="timerTitle">
+        <div class="row">
+          <h3 class="drawer__subtitle" id="timerTitle" data-i18n="sleepTimer">Sleep timer</h3>
+          <span class="row__value" id="timerLeft" aria-live="off"></span>
+        </div>
+        <div class="segmented" id="timerOptions" role="group" aria-labelledby="timerTitle"></div>
+      </section>
+
+      <!-- 음소거 · 언어 -->
+      <section class="drawer__section">
+        <div class="row">
+          <span id="muteLabel" data-i18n="mute">Mute</span>
+          <button class="switch" id="muteSwitch" type="button" role="switch" aria-checked="false" aria-labelledby="muteLabel">
+            <span class="switch__knob"></span>
+          </button>
+        </div>
+        <div class="row">
+          <span id="langLabel" data-i18n="language">Language</span>
+          <div class="segmented segmented--compact" id="langOptions" role="group" aria-labelledby="langLabel">
+            <button class="segmented__btn" type="button" data-lang="en" aria-pressed="true">English</button>
+            <button class="segmented__btn" type="button" data-lang="ko" aria-pressed="false">한국어</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 단축키 -->
+      <section class="drawer__section" aria-labelledby="keysTitle">
+        <h3 class="drawer__subtitle" id="keysTitle" data-i18n="shortcuts">Keyboard shortcuts</h3>
+        <dl class="keys">
+          <div><dt><kbd>Space</kbd></dt><dd data-i18n="keyPlay">Play / pause</dd></div>
+          <div><dt><kbd>M</kbd></dt><dd data-i18n="keyMute">Mute on / off</dd></div>
+          <div><dt><kbd>1</kbd> ~ <kbd>8</kbd></dt><dd data-i18n="keyPick">Jump to a sound</dd></div>
+          <div><dt><kbd>Esc</kbd></dt><dd data-i18n="keyClose">Close settings</dd></div>
+        </dl>
+      </section>
+
+      <details class="credits" id="credits" hidden>
+        <summary data-i18n="credits">Credits</summary>
+        <ul id="creditList"></ul>
+      </details>
+
+      <a class="donate" id="donateLink" href="#" target="_blank" rel="noopener noreferrer" data-i18n="donate">☕ Support</a>
+    </div>
+  </aside>
+
+  <!-- 알림 -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <p class="visually-hidden" id="srStatus" aria-live="polite"></p>
+
+  <noscript><p class="noscript">Sound Canvas needs JavaScript to run.</p></noscript>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
