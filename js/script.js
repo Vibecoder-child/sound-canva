@@ -72,6 +72,7 @@
   const I18N = {
     en: {
       siteTitle: 'Sound Canvas',
+      pageTitle: 'Sound Canvas — Free Ambient Sounds for Focus & Sleep',
       dockLabel: 'Choose a sound',
       nowSection: 'Current sound',
       openSettings: 'Open settings',
@@ -124,6 +125,7 @@
     },
     ko: {
       siteTitle: '사운드 캔버스',
+      pageTitle: '사운드 캔버스 — 집중·수면을 위한 무료 빗소리·백색소음',
       dockLabel: '소리 고르기',
       nowSection: '지금 고른 소리',
       openSettings: '설정 열기',
@@ -406,7 +408,7 @@
   // 화면 전체에 현재 언어 적용
   function applyLanguage() {
     document.documentElement.lang = LANG;
-    document.title = t('siteTitle');
+    document.title = t('pageTitle');
     document.querySelectorAll('[data-i18n]').forEach((el) => {
       el.textContent = t(el.dataset.i18n);
     });
